@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>MC 2017</title>
+        <script type="text/javascript" src="d3/d3.v3.min.js"></script>
+    </head>
+    <body>
+        <h1>MC 2017</h1>
+        <script type="text/javascript">                
+			var w = 600;
+			var h = 600;
+			var padding = 6;
+
+			//Dynamic, random dataset
+			var dataset = [];					//Initialize empty array
+			var numDataPoints = 40;				//Number of dummy data points to create
+			var xRange = 600;	//Max range of new x values
+			var yRange = 600;	//Max range of new y values
+            
+            d3.csv("dump.csv", function(data) { 
+                data_ready(data);
+            });
+
+            function data_ready(dataset){
+                
+                //Create scale functions
+                var xScale = d3.scale.linear()
+                                    .domain([0, 600])
+                                    .range([padding, w - padding]);
+
+                var yScale = d3.scale.linear()
+                                    .domain([0, 600])
+                                    .range([h - padding, padding]);
+
+                var sizeScale = d3.scale.linear()
+                                    .domain([0, 600])
+                                    .range([5,500]);
+
+                //Define X axis
+                var xAxis = d3.svg.axis()
+                                .scale(xScale)
+                                .orient("bottom")
+                                .ticks(5);
+
+                //Define Y axis
+                var yAxis = d3.svg.axis()
+                                .scale(yScale)
+                                .orient("left")
+                                .ticks(5);
+
+                //Create SVG element
+                var svg = d3.select("body")
+                            .append("svg")
+                            .attr("width", w)
+                            .attr("height", h)
+                            .style("background", "url(DumpPath.png)");
+
+                            var dataset1 = [];					//Initialize empty array
+                /*for(i=0; i < dataset.length/2; i++){
+                    console.log(dataset[i]);
+                    dataset1.push(dataset[i]);	
+                }
+                var dataset2 = [];					//Initialize empty array
+                for(i=dataset.length/2; i < dataset.length; i++){
+                    dataset2.push(dataset[i]);
+                }
+                */
+
+                /*
+                    All objects with size 
+                    greater than the average size of all scatterplot 
+                    objects should be colored blue and all other objects 
+                    should be colored green. 
+                */
+                var totalSize = 0;
+                var averageSize = 0;
+                var count = 0;
+                var currSize = 0;
+
+                svg.selectAll("circle")
+                    .data(dataset)
+                    .enter()
+                    .append("path")
+                    .attr("cx", d => xScale(d["X"]))
+                    .attr("cy", d => yScale(parseFloat(d["Y"])))
+                    .attr("d", d => { 
+                        currSize = Math.round(/*sizeScale(d["X"]*/100);
+                        totalSize = totalSize + currSize;
+                        //ataset[count++].push(currSize);
+                        averageSize = totalSize / count; 
+                        return d3.svg.symbol().type("circle").size(currSize)(d)})
+                    .attr("transform", d => "translate(" + xScale(d["X"]) + "," 
+                        + yScale(parseFloat(d["Y"])) + ")")
+                    .attr("fill", "green")
+                    .attr("class", "circle")
+                    .attr("stroke", d=> { return d[2] > averageSize ? "blue" : "green"});
+                
+                var circles = svg.selectAll(".circle")
+                                .transition()
+                                .duration(3000)
+                                .attr("d", d => { 
+                                    currSize = Math.round(/*sizeScale(d["X"]*/1000);
+                                    totalSize = totalSize + currSize;
+                                    //ataset[count++].push(currSize);
+                                    averageSize = totalSize / count; 
+                                    return d3.svg.symbol().type("circle").size(currSize)(d)
+                                });
+
+                /*svg.selectAll("triangle")
+                    .data(dataset)
+                    .enter()
+                    .append("path")
+                    .attr("x", d => xScale(d[0]))
+                    .attr("y", d => yScale(parseFloat(d[1])))
+                    .attr("d", d => { 
+                        currSize = Math.round(sizeScale(d[0]));
+                        totalSize = totalSize + currSize;
+                        dataset[count++].push(currSize);
+                        averageSize = totalSize / count; 
+                        return d3.svg.symbol().type("triangle-up").size(currSize)(d)})
+                    .attr("transform", d => "translate(" + xScale(d[0]) + "," 
+                        + yScale(parseFloat(d[1])) + ")")
+                    .attr("fill", "none")
+                    .attr("stroke", d=> { return d[2] > averageSize ? "blue" : "green"});
+                */
+                //Create X axis
+                svg.append("g")
+                    .attr("class", "axis")
+                    .attr("transform", "translate(0," + (h - padding) + ")")
+                    .call(xAxis)
+                
+                //Create Y axis
+                svg.append("g")
+                    .attr("class", "axis")
+                    .attr("transform", "translate(" + padding + ",0)")
+                    .call(yAxis);
+                }
+
+            /*
+			for (var i = 0; i < numDataPoints; i++) {					//Loop numDataPoints times
+				var newNumber1 = Math.round(Math.random() * xRange);	//New random integer
+				var newNumber2 = Math.round(Math.random() * yRange);	//New random integer
+				dataset.push([newNumber1, newNumber2]);					//Add new number to array
+			}
+            */
+        </script>
+        <h3 style="margin:0 auto; margin-left: 150px">Example scatter plot</h3>
+    </body>
+</html>     
