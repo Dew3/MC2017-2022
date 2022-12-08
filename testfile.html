@@ -7,7 +7,7 @@
     </head>
     <body>
         <h1>MC 2017</h1>
-        <script type="text/javascript">                
+        <script type="text/javascript">      
 			var w = 600;
 			var h = 600;
 			var padding = 6;
@@ -17,12 +17,18 @@
 			var numDataPoints = 40;				//Number of dummy data points to create
 			var xRange = 600;	//Max range of new x values
 			var yRange = 600;	//Max range of new y values
-            
-            d3.csv("dump.csv", function(data) { 
-                data_ready(data);
+
+            d3.csv("Checkpoints.csv", function(data) { 
+                checkpoints_done(data);
             });
 
-            function data_ready(dataset){
+            function checkpoints_done(checkpoints){
+                d3.csv("dump.csv", function(data) { 
+                    data_ready(checkpoints, data);
+                });
+            }
+
+            function data_ready(checkpoints, dataset){
                 
                 //Create scale functions
                 var xScale = d3.scale.linear()
@@ -37,6 +43,7 @@
                                     .domain([0, 600])
                                     .range([5,500]);
 
+                
                 //Define X axis
                 var xAxis = d3.svg.axis()
                                 .scale(xScale)
@@ -49,6 +56,7 @@
                                 .orient("left")
                                 .ticks(5);
 
+                
                 //Create SVG element
                 var svg = d3.select("body")
                             .append("svg")
@@ -56,7 +64,7 @@
                             .attr("height", h)
                             .style("background", "url(DumpPath.png)");
 
-                            var dataset1 = [];					//Initialize empty array
+                var dataset1 = [];					//Initialize empty array
                 /*for(i=0; i < dataset.length/2; i++){
                     console.log(dataset[i]);
                     dataset1.push(dataset[i]);	
@@ -95,18 +103,27 @@
                     .attr("fill", "green")
                     .attr("class", "circle")
                     .attr("stroke", d=> { return d[2] > averageSize ? "blue" : "green"});
-                
-                var circles = svg.selectAll(".circle")
-                                .transition()
-                                .duration(3000)
-                                .attr("d", d => { 
-                                    currSize = Math.round(/*sizeScale(d["X"]*/1000);
-                                    totalSize = totalSize + currSize;
-                                    //ataset[count++].push(currSize);
-                                    averageSize = totalSize / count; 
-                                    return d3.svg.symbol().type("circle").size(currSize)(d)
-                                });
 
+                numDays = 397;
+                for(var i = 0; i < numDays; i++){
+                    
+                    svg.selectAll(".circle")
+                    .transition()
+                    .delay(300)
+                    .attr("d", d => { 
+                        return d3.svg.symbol().type("circle").size(getSize(checkpoints, i, d["Location"]))(d);
+                    })
+                    .on('end', my_fn);
+                }
+
+                function getSize(checkpoints, day, location){
+                    console.log("Here");
+                    return parseInt(checkpoints[day][location]);
+                }
+
+
+                //https://stackoverflow.com/questions/56045182/how-can-i-add-a-delay-between-function-calls-that-change-data-in-d3-js
+                
                 /*svg.selectAll("triangle")
                     .data(dataset)
                     .enter()
@@ -125,6 +142,8 @@
                     .attr("stroke", d=> { return d[2] > averageSize ? "blue" : "green"});
                 */
                 //Create X axis
+                
+
                 svg.append("g")
                     .attr("class", "axis")
                     .attr("transform", "translate(0," + (h - padding) + ")")
@@ -135,6 +154,7 @@
                     .attr("class", "axis")
                     .attr("transform", "translate(" + padding + ",0)")
                     .call(yAxis);
+                    
                 }
 
             /*
@@ -145,6 +165,5 @@
 			}
             */
         </script>
-        <h3 style="margin:0 auto; margin-left: 150px">Example scatter plot</h3>
     </body>
 </html>     
