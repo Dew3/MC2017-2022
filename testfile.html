@@ -4,6 +4,10 @@
         <meta charset="utf-8">
         <title>MC 2017</title>
         <script type="text/javascript" src="d3/d3.v3.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     </head>
     <body>
         <h1>MC 2017</h1>
@@ -18,8 +22,23 @@
             </div>
         </p>
         <p>
-            <button onclick="run()">Play</button>
+            <input type="text" name="daterange" value="05/01/2015 - 05/31/2016" />
+
+            <script>
+                $(function() {
+                $('input[name="daterange"]').daterangepicker({
+                    opens: 'left'
+                }, function(start, end, label) {
+                    console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                });
+                });
+            </script>
         </p>
+        <p>
+            <button onclick="run()">Play</button>
+            <button id="stop" onclick="stop()">Stop</button>
+        </p>
+        <h5 id="day"></h5>
         <script type="text/javascript">     
             
             document.querySelector('#container').onclick = function(ev) {
@@ -50,9 +69,9 @@
             // now do something with curr_volume
             });
             */
+
            function run(){
                 if(!document.getElementById("map")){
-                
                 var w = 600;
                 var h = 600;
                 var padding = 6;
@@ -74,7 +93,6 @@
                 }
 
                 function data_ready(checkpoints, dataset){
-                    
                     //Create scale functions
                     var xScale = d3.scale.linear()
                                         .domain([0, 600])
@@ -109,7 +127,12 @@
                                 .attr("width", w)
                                 .attr("height", h)
                                 .style("background", "url(DumpPath.png)");
-
+                    
+                    d3.select("#stop").on("click",function(){
+                        console.log("Here");
+                        svg.selectAll(".circle").interrupt();
+                    });
+                
                     var dataset1 = [];					//Initialize empty array
                     /*for(i=0; i < dataset.length/2; i++){
                         console.log(dataset[i]);
@@ -156,7 +179,8 @@
                         svg.selectAll(".circle")
                         .transition()
                         .duration(300)
-                        .attr("d", d => { 
+                        .attr("d", d => {
+                            document.getElementById("day").innerText = "Day: " + day;
                             return d3.svg.symbol().type("circle").size(getSize(checkpoints, day, d["Location"]))(d);
                         })
                     }
