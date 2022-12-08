@@ -12,7 +12,6 @@
     <body>
         <h1>MC 2017</h1>
         <p>
-            <!--<input id="volume" type="range" min="0" max="397" step="1" value="0"/>-->
             <div id="container">
                 <input type="checkbox" name="entrance"> Remove Entrances
                 <input type="checkbox" name="camping"> Remove Campsites
@@ -22,7 +21,7 @@
             </div>
         </p>
         <p>
-            <input type="text" name="daterange" value="05/01/2015 - 05/31/2016" />
+            <input id="date" type="text" name="daterange" value="05/01/2015 - 05/31/2016" />
 
             <script>
                 $(function() {
@@ -57,26 +56,16 @@
                 }
             }
 
-
-
-
-            /*document.getElementById('volume').addEventListener('change', function() {
-
-            var curr_volume = this.value;
-
-            console.log("curr_volume ", curr_volume);
-
-            // now do something with curr_volume
-            });
-            */
-
            function run(){
                 if(!document.getElementById("map")){
+                var times = document.getElementById("date").value.split(" - ");
+                var start = times[0];
+                var finish = times[1];
+                console.log(start + finish);
                 var w = 600;
                 var h = 600;
                 var padding = 6;
 
-                //Dynamic, random dataset
                 var dataset = [];					//Initialize empty array
                 var numDataPoints = 40;				//Number of dummy data points to create
                 var xRange = 600;	//Max range of new x values
@@ -106,7 +95,6 @@
                                         .domain([0, 600])
                                         .range([300,500]);
 
-                    
                     //Define X axis
                     var xAxis = d3.svg.axis()
                                     .scale(xScale)
@@ -119,7 +107,6 @@
                                     .orient("left")
                                     .ticks(5);
 
-                    
                     //Create SVG element
                     var svg = d3.select("body")
                                 .append("svg")
@@ -133,23 +120,7 @@
                         svg.selectAll(".circle").interrupt();
                     });
                 
-                    var dataset1 = [];					//Initialize empty array
-                    /*for(i=0; i < dataset.length/2; i++){
-                        console.log(dataset[i]);
-                        dataset1.push(dataset[i]);	
-                    }
-                    var dataset2 = [];					//Initialize empty array
-                    for(i=dataset.length/2; i < dataset.length; i++){
-                        dataset2.push(dataset[i]);
-                    }
-                    */
-
-                    /*
-                        All objects with size 
-                        greater than the average size of all scatterplot 
-                        objects should be colored blue and all other objects 
-                        should be colored green. 
-                    */
+                    var dataset1 = [];			
                     var totalSize = 0;
                     var averageSize = 0;
                     var count = 0;
@@ -169,10 +140,26 @@
                             return d3.svg.symbol().type("circle").size(currSize)(d)})
                         .attr("transform", d => "translate(" + xScale(d["X"]) + "," 
                             + yScale(parseFloat(d["Y"])) + ")")
-                        .attr("fill", "green")
+                        .attr("fill", d=> {     
+                            var location = d["Location"];
+                            if(location.startsWith("camping")){
+                                return "red";
+                            }
+                            else if(location.startsWith("general")){
+                                return "blue";
+                            }
+                            else if(location.startsWith("gate")){
+                                return "white";
+                            }
+                            else if(location.startsWith("ranger")){
+                                return "yellow";
+                            }
+                            else if(location.startsWith("entrance")){
+                                return "green";
+                            }
+                        })
                         .attr("class", "circle")
                         .attr("id", d => d["Location"])
-                        .attr("stroke", d=> { return d[2] > averageSize ? "blue" : "green"});
 
                     numDays = 397;
                     function update(day){
@@ -180,7 +167,7 @@
                         .transition()
                         .duration(300)
                         .attr("d", d => {
-                            document.getElementById("day").innerText = "Day: " + day;
+                            document.getElementById("day").innerText = "Day: " + (day+1);
                             return d3.svg.symbol().type("circle").size(getSize(checkpoints, day, d["Location"]))(d);
                         })
                     }
@@ -192,29 +179,6 @@
                     function getSize(checkpoints, day, location){
                         return 100*parseInt(checkpoints[day][location]);
                     }
-
-
-                    //https://stackoverflow.com/questions/56045182/how-can-i-add-a-delay-between-function-calls-that-change-data-in-d3-js
-                    
-                    /*svg.selectAll("triangle")
-                        .data(dataset)
-                        .enter()
-                        .append("path")
-                        .attr("x", d => xScale(d[0]))
-                        .attr("y", d => yScale(parseFloat(d[1])))
-                        .attr("d", d => { 
-                            currSize = Math.round(sizeScale(d[0]));
-                            totalSize = totalSize + currSize;
-                            dataset[count++].push(currSize);
-                            averageSize = totalSize / count; 
-                            return d3.svg.symbol().type("triangle-up").size(currSize)(d)})
-                        .attr("transform", d => "translate(" + xScale(d[0]) + "," 
-                            + yScale(parseFloat(d[1])) + ")")
-                        .attr("fill", "none")
-                        .attr("stroke", d=> { return d[2] > averageSize ? "blue" : "green"});
-                    */
-                    //Create X axis
-                    
 
                     svg.append("g")
                         .attr("class", "axis")
@@ -230,14 +194,6 @@
                     }
                 }
             }
-
-            /*
-			for (var i = 0; i < numDataPoints; i++) {					//Loop numDataPoints times
-				var newNumber1 = Math.round(Math.random() * xRange);	//New random integer
-				var newNumber2 = Math.round(Math.random() * yRange);	//New random integer
-				dataset.push([newNumber1, newNumber2]);					//Add new number to array
-			}
-            */
         </script>
     </body>
 </html>     
