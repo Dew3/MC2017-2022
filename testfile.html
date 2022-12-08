@@ -7,7 +7,46 @@
     </head>
     <body>
         <h1>MC 2017</h1>
-        <script type="text/javascript">      
+        <p>
+            <!--<input id="volume" type="range" min="0" max="397" step="1" value="0"/>-->
+            <div id="container">
+                <input type="checkbox" name="entrance"> Remove Entrances
+                <input type="checkbox" name="camping"> Remove Campsites
+                <input type="checkbox" name="general"> Remove General Gates
+                <input type="checkbox" name="gate"> Remove Gates
+                <input type="checkbox" name="ranger"> Remove Ranger-Stops
+            </div>
+        </p>
+        <script type="text/javascript">     
+            
+            document.querySelector('#container').onclick = function(ev) {
+                if(ev.target.checked){
+                    select_els = document.querySelectorAll('[id ^=' + ev.target.getAttribute('name') + ']');
+                    console.log(select_els);
+                    for (let i = 0; i < select_els.length; i++) {
+                        select_els[i].style.display = "none";
+                    }
+                }
+                else{
+                    select_els = document.querySelectorAll('[id ^=' + ev.target.getAttribute('name') + ']');
+                    for(let i = 0; i < select_els.length; i++){
+                        select_els[i].style.display = "block";
+                    }
+                }
+            }
+
+
+
+
+            /*document.getElementById('volume').addEventListener('change', function() {
+
+            var curr_volume = this.value;
+
+            console.log("curr_volume ", curr_volume);
+
+            // now do something with curr_volume
+            });
+            */
 			var w = 600;
 			var h = 600;
 			var padding = 6;
@@ -41,7 +80,7 @@
 
                 var sizeScale = d3.scale.linear()
                                     .domain([0, 600])
-                                    .range([5,500]);
+                                    .range([300,500]);
 
                 
                 //Define X axis
@@ -102,23 +141,24 @@
                         + yScale(parseFloat(d["Y"])) + ")")
                     .attr("fill", "green")
                     .attr("class", "circle")
+                    .attr("id", d => d["Location"])
                     .attr("stroke", d=> { return d[2] > averageSize ? "blue" : "green"});
 
                 numDays = 397;
-                for(var i = 0; i < numDays; i++){
-                    
+                function update(day){
                     svg.selectAll(".circle")
-                    .transition()
-                    .delay(300)
+                    .transition(30)
                     .attr("d", d => { 
-                        return d3.svg.symbol().type("circle").size(getSize(checkpoints, i, d["Location"]))(d);
+                        return d3.svg.symbol().type("circle").size(getSize(checkpoints, day, d["Location"]))(d);
                     })
-                    .on('end', my_fn);
+                }
+
+                for(var i = 0; i < numDays; i++){
+                    setTimeout(update.bind(null, i), 30*i);
                 }
 
                 function getSize(checkpoints, day, location){
-                    console.log("Here");
-                    return parseInt(checkpoints[day][location]);
+                    return 100*parseInt(checkpoints[day][location]);
                 }
 
 

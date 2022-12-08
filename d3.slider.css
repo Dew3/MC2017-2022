@@ -1,0 +1,37 @@
+
+.chart rect {
+    fill: steelblue;
+  }
+  
+  .chart text {
+    fill: white;
+    font: 12px sans-serif;
+    text-anchor: end;
+  }
+  
+  body {
+    font-family: Verdana, Arial, sans-serif;
+  }
+  
+  h2 {
+    font-size: 1.2em;
+    margin: 60px 0 5px 0;
+  }
+  
+  .wrapper {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .wrapper > div {
+    margin: 10px 0;
+  }
+  
+  #slider8 {
+    height: 250px;
+  }
+  
+  #slider9 {
+    height: 250px;
+  }
